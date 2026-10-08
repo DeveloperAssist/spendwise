@@ -65,7 +65,7 @@ export default function Layout() {
         </aside>
 
         {/* mobile top bar */}
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
           <Logo />
           <div className="flex gap-1">
             <NavLink to="/import" className="rounded-lg p-2 text-slate-600 hover:bg-slate-100" title="Import">
