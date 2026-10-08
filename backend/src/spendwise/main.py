@@ -75,6 +75,17 @@ def create_app() -> FastAPI:
         @app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
         def index():
             return FileResponse(FRONTEND / "index.html")
+    else:
+
+        @app.get("/", include_in_schema=False)
+        def no_web_app():
+            # a first-time setup hint instead of a bare 404
+            return {
+                "message": "The SpendWise API is running, but the web app isn't built yet.",
+                "build_it": "cd frontend && npm install && npm run build   (then reload this page)",
+                "or_develop": "cd frontend && npm run dev   (then open http://localhost:5173)",
+                "api_docs": "/docs",
+            }
 
     return app
 

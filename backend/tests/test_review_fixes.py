@@ -214,3 +214,14 @@ def test_us_style_dates_are_detected():
     assert [r.date.isoformat() for r in parse_statement(text.encode(), "s.csv").rows] == ["2026-01-02", "2026-01-15"]
     indian = "Date,Narration,Debit\n01/02/2026,A,10\n15/01/2026,B,10\n"
     assert [r.date.isoformat() for r in parse_statement(indian.encode(), "s.csv").rows] == ["2026-02-01", "2026-01-15"]
+
+
+def test_home_page_explains_how_to_build_the_web_app(monkeypatch, tmp_path):
+    from fastapi.testclient import TestClient
+
+    from spendwise import main
+
+    monkeypatch.setattr(main, "FRONTEND", tmp_path)  # a fresh clone: frontend/dist doesn't exist yet
+    r = TestClient(main.create_app()).get("/")
+    assert r.status_code == 200
+    assert "npm run build" in r.json()["build_it"]
