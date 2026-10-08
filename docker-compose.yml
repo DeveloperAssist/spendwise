@@ -1,0 +1,34 @@
+# docker compose up --build      ->  http://localhost:8000   (APP_PORT=8090 to use another port)
+# Put JWT_SECRET (and optionally GROQ_API_KEY) in a .env file next to this one. See .env.example.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: spendwise
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-spendwise}
+      POSTGRES_DB: spendwise
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"          # only for running the tests against Postgres from your machine
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spendwise -d spendwise"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://spendwise:${POSTGRES_PASSWORD:-spendwise}@db:5432/spendwise
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env (32+ random characters)}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      CORS_ORIGINS: '["http://localhost:8000"]'
+    ports:
+      - "${APP_PORT:-8000}:8000"
+
+volumes:
+  pgdata:

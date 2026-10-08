@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: spendwise
+          POSTGRES_PASSWORD: spendwise
+          POSTGRES_DB: spendwise_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U spendwise" --health-interval 3s --health-timeout 3s --health-retries 20
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Tests (SQLite)
+        run: uv run pytest -q
+      - name: Tests (PostgreSQL)
+        run: uv run pytest -q
+        env:
+          TEST_DATABASE_URL: postgresql+psycopg://spendwise:spendwise@localhost:5432/spendwise_test
+      - name: Migrations match the models
+        run: uv run alembic upgrade head && uv run alembic check
+        env:
+          DATABASE_URL: postgresql+psycopg://spendwise:spendwise@localhost:5432/spendwise_test
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build          # type-checks with tsc, then builds with Vite
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t spendwise .

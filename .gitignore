@@ -1,0 +1,18 @@
+# secrets and local data: never commit these
+.env
+*.db
+*.db-shm
+*.db-wal
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# web app
+node_modules/
+frontend/dist/
+# editor / assistant settings
+.claude/
+# the v1 single-page version, kept locally for reference
+_v1/
