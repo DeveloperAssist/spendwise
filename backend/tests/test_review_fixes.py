@@ -225,3 +225,12 @@ def test_home_page_explains_how_to_build_the_web_app(monkeypatch, tmp_path):
     r = TestClient(main.create_app()).get("/")
     assert r.status_code == 200
     assert "npm run build" in r.json()["build_it"]
+
+
+def test_ai_text_uses_plain_spaces():
+    from spendwise.ai.service import tidy
+
+    # gpt-oss writes narrow no-break spaces: they rendered as "cancelNetflix" in the app
+    nnbsp, nbhy = chr(0x202F), chr(0x2011)
+    raw = f"cancel{nnbsp}Netflix ({nnbsp}/{nnbsp}month), {nbhy}8%\n"
+    assert tidy(raw) == "cancel Netflix ( / month), -8%"

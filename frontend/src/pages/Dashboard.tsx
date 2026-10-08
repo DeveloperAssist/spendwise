@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowDownRight, ArrowUpRight, Gauge, PiggyBank, Sparkles, Upload, Wallet } from "lucide-react";
 import { Link } from "react-router";
+import { Bold } from "../components/Bold";
 import {
   Area,
   AreaChart,
@@ -199,7 +200,7 @@ export default function Dashboard() {
             <p className="mt-3 text-sm text-slate-500">Add a free Groq API key to the server to turn on AI insights and the assistant.</p>
           ) : insights.data ? (
             <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
-              {insights.data.text.split("\n").filter(Boolean).map((line, i) => <li key={i}>{line.replace(/^-\s*/, "• ")}</li>)}
+              {insights.data.text.split("\n").filter(Boolean).map((line, i) => <li key={i}><Bold text={line.replace(/^-\s*/, "• ")} /></li>)}
             </ul>
           ) : (
             <p className="mt-3 text-sm text-slate-500">Three quick observations about {monthLabel(dash.data.month)}, written by AI from your real numbers.</p>

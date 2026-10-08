@@ -4,6 +4,7 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Empty, ErrorNote, PageHeader } from "../components/ui";
 import { api } from "../lib/api";
 import type { ChatMessage, ChatStep } from "../lib/types";
+import { Bold } from "../components/Bold";
 
 const SUGGESTIONS = [
   "How much did I spend on Swiggy last month?",
@@ -76,7 +77,7 @@ export default function Assistant() {
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === "user" ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-800"}`}>
-                <div className="whitespace-pre-wrap">{m.content.replace(/\*\*/g, "")}</div>
+                <div className="whitespace-pre-wrap"><Bold text={m.content} /></div>
                 {m.steps && m.steps.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5 border-t border-slate-200 pt-2">
                     {m.steps.map((s, j) => <StepChip key={j} step={s} />)}

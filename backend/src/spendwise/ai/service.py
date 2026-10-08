@@ -18,6 +18,15 @@ from .llm import LLM
 
 log = logging.getLogger("spendwise.ai")
 
+# Models like to write typographic spaces and hyphens (U+202F between words, U+2011 in "-8%").
+# A narrow no-break space renders as almost nothing ("cancelNetflix" on screen), so the app shows plain ones.
+_TYPO = str.maketrans({0x202F: " ", 0x00A0: " ", 0x2007: " ", 0x2009: " ", 0x2011: "-"})
+
+
+def tidy(text: str) -> str:
+    return text.translate(_TYPO).strip()
+
+
 MAX_STEPS = 5  # tool rounds per question
 MAX_TOOL_CALLS = 8  # tool runs per question
 HISTORY_TURNS = 6
@@ -72,7 +81,7 @@ class AIService:
                 {"role": "user", "content": "Facts: " + json.dumps(facts, ensure_ascii=False)},
             ]
         )
-        return reply.content.strip()
+        return tidy(reply.content)
 
     def ask(
         self, session: Session, user, question: str, history: list[dict] | None = None, today: dt.date | None = None
@@ -94,7 +103,7 @@ class AIService:
         for _ in range(MAX_STEPS):
             reply = self.llm.chat(messages, tools=schemas)
             if not reply.tool_calls:
-                return {"answer": reply.content.strip() or "Sorry, I couldn't work that out.", "steps": steps}
+                return {"answer": tidy(reply.content) or "Sorry, I couldn't work that out.", "steps": steps}
             messages.append(
                 {
                     "role": "assistant",
@@ -116,4 +125,4 @@ class AIService:
                 )
         messages.append({"role": "user", "content": "Answer now, using only the tool results above."})
         reply = self.llm.chat(messages)
-        return {"answer": reply.content.strip() or "Sorry, I couldn't work that out.", "steps": steps}
+        return {"answer": tidy(reply.content) or "Sorry, I couldn't work that out.", "steps": steps}

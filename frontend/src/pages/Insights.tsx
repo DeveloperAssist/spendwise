@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Repeat, Sparkles } from "lucide-react";
+import { Bold } from "../components/Bold";
 import { CategoryIcon, Empty, ErrorNote, MonthPicker, NoDataYet, PageHeader, Spinner } from "../components/ui";
 import { api } from "../lib/api";
 import { dateLabel, monthLabel, rupees } from "../lib/format";
@@ -38,7 +39,7 @@ export default function Insights() {
           <p className="mt-2 text-sm text-slate-500">AI is off on this server. Add a free Groq API key to turn it on.</p>
         ) : ai.data ? (
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-slate-700">
-            {ai.data.text.split("\n").filter(Boolean).map((l, i) => <li key={i}>{l.replace(/^-\s*/, "• ")}</li>)}
+            {ai.data.text.split("\n").filter(Boolean).map((l, i) => <li key={i}><Bold text={l.replace(/^-\s*/, "• ")} /></li>)}
           </ul>
         ) : (
           <p className="mt-2 text-sm text-slate-500">The AI reads totals, budgets, subscriptions and unusual payments that SpendWise computed, and turns them into three tips. It never invents a number.</p>
