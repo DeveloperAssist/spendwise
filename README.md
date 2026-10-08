@@ -349,7 +349,7 @@ Set these in `backend/.env` for local runs, or in the top-level `.env` for Docke
 
 ```bash
 cd backend
-uv run pytest                    # 114 tests, ~10 s, no network or key needed
+uv run pytest                    # 115 tests, ~10 s, no network or key needed
 uv run ruff check . && uv run ruff format --check .
 TEST_DATABASE_URL=postgresql+psycopg://user:pass@127.0.0.1:5432/test uv run pytest   # same suite on PostgreSQL
 ```
